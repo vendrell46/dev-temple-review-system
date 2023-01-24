@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/ReviewMe.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.17;\n\nerror ReviewMe__NotOwner();\n\ncontract ReviewMe {\n    address private immutable owner;\n    mapping(address => RatingProduct) private userToReview;\n    address[] private reviewers;\n    uint256 public amountOfReviews;\n\n    struct RatingProduct {\n        string opinion;\n        uint8 starsNumber;\n        bool isReviewed;\n    }\n\n    modifier onlyOwner() {\n        if (msg.sender != owner) {\n            revert ReviewMe__NotOwner();\n        }\n        _;\n    }\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    function setReview(string memory _opinion, uint8 _starsNumber) public {\n        if (userToReview[msg.sender].isReviewed) {\n            revert(\"You have already added a review\");\n        }\n        userToReview[msg.sender].opinion = _opinion;\n        userToReview[msg.sender].starsNumber = _starsNumber;\n        userToReview[msg.sender].isReviewed = true;\n        reviewers.push(msg.sender);\n\n        amountOfReviews++;\n    }\n\n    function getReviewByIndex(\n        uint256 reviewIndex\n    ) public view returns (string memory, uint256) {\n        return (\n            userToReview[reviewers[reviewIndex]].opinion,\n            userToReview[reviewers[reviewIndex]].starsNumber\n        );\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
