@@ -33,13 +33,9 @@ contract ReviewMe {
     }
 
     modifier isWhitelisted() {
-        address whitelistContractAddress = WhitelistContractAddress;
-        bytes memory data = abi.encodeWithSignature(
-            "whitelist(address)",
-            msg.sender
-        );
-        (bool isWhitelisted, ) = address(whitelistContractAddress).call(data);
-        require(isWhitelisted, "Sender is not whitelisted");
+        if (!whitelistContract.whitelist(msg.sender)) {
+            revert ReviewMe__NotWhitelisted();
+        }
         _;
     }
 
